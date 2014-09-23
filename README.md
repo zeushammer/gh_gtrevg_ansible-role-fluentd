@@ -1,4 +1,4 @@
 ansible-role-fluentd
 ====================
 
-An ansible role for installing fluentd
+[EXPERIMENTAL] An ansible role for installing fluentd
