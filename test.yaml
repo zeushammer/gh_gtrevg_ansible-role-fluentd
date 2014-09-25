@@ -1,0 +1,64 @@
+---
+- hosts: test
+
+  vars:
+
+  roles:
+    - role: '.'
+      fluentd_plugins:
+        - fields-parser
+        - record-modifier
+        - record-reformer
+        - splunk-ex
+        - elasticsearch-cluster
+
+      fluentd_sources:
+        - '#':                Only one comment is allowed as it's a hash
+          type:               http
+          port:               8888
+          bind:               0.0.0.0
+          body_size_limit:    32m
+          keepalive_timeout:  10s
+
+        - '#':      Grab the apache logs
+          type:     tail
+          path:     /var/log/httpd-access.log
+          pos_file: /var/log/td-agent/httpd-access.log.pos
+          tag:      apache.access
+          format:   apache2
+
+
+      fluentd_matches:
+        - '#':                Send data out to multiple servers
+          _tag_value:         '**'
+          type:               forward
+          send_timeout:       60s
+          recover_wait:       10s
+          heartbeat_interval: 1s
+          phi_threshold:      16
+          hard_timeout:       60s
+
+          _children:
+            - '#':    First collector
+              _tag:   server
+              name:   myserver1
+              host:   192.168.1.3
+              port:   24224
+              weight: 60
+
+            - '#':    Second collector
+              _tag:   server
+              name:   myserver2
+              host:   192.168.1.4
+              port:   24224
+              weight: 60
+
+            - '#':    Backup plan
+              _tag:   secondary
+              type:   file
+              path:   /var/log/fluent/forward-failed
+
+
+      tags:
+        - install
+        - fluentd

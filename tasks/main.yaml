@@ -1,0 +1,65 @@
+---
+# - debug: var=ansible_distribution
+# - debug: var=ansible_distribution_release
+
+- name: load os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+      - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yaml"
+      - "{{ ansible_distribution }}.yaml"
+      - "{{ ansible_os_family }}.yaml"
+      paths:
+        - ../vars/
+
+
+# - debug: var=fluentd_install_script
+
+- name: get install script
+  sudo: true
+  get_url:
+    url: "{{ fluentd_install_url }}/{{ fluentd_install_script }}"
+    dest: "{{ fluentd_temp_dir }}/{{ fluentd_install_script }}"
+
+- name: run treasuredata install script
+  sudo: true
+  command: "sh {{ fluentd_temp_dir }}/{{ fluentd_install_script }}"
+
+- name: create spool directory
+  sudo: true
+  file:
+    dest: "{{ fluentd_spool_dir }}"
+    state: directory
+    owner: td-agent
+    group: td-agent
+    mode: 0755
+
+- name: create config directory
+  sudo: true
+  file:
+    dest: "{{ fluentd_conf_dir }}"
+    state: directory
+    group: td-agent
+    mode: 0755
+
+
+- name: install requirements for plugin compilation
+  sudo: true
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  with_items: fluentd_plugin_required_packages
+
+
+- name: install fluentd plugins
+  sudo: true
+  command: "{{ fluentd_bin_dir }}/fluent-gem install fluent-plugin-{{ item }}"
+  with_items: fluentd_plugins
+
+
+- name: install td-agent configuration
+  template:
+    src: etc_td-agent_td-agent.conf
+    dest: "{{ fluentd_conf_file }}"
+    owner: td-agent
+    group: td-agent
+    mode: 0644
+  when: fluentd_sources is defined or fluentd_matches is defined

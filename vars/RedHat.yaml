@@ -1,0 +1,7 @@
+---
+fluentd_install_script: install-redhat-td-agent2.sh
+
+fluentd_plugin_required_packages:
+  - gcc
+  - libcurl-devel
+  - ruby-devel

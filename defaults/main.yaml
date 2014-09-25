@@ -1,0 +1,38 @@
+---
+
+# Installation Options
+fluentd_temp_dir: /tmp
+fluentd_install_url:  http://toolbelt.treasuredata.com/sh
+
+# Directories
+fluentd_bin_dir:  /opt/td-agent/embedded/bin
+fluentd_spool_dir:  /var/spool/td-agent
+fluentd_conf_dir:   /etc/td-agent
+fluentd_conf_file: "{{ fluentd_conf_dir }}/td-agent.conf"
+
+
+# Required for plugin compilation & installation
+fluentd_plugin_required_packages:  # Debian packages
+  - gcc
+  - make
+  - libcurl4-openssl-dev
+  - ruby-dev
+
+# Desired plugins
+fluentd_plugins:  ~
+  # - fields-parser
+  # - record-modifier
+  # - record-reformer
+  # - splunk-ex
+  # - elasticsearch
+  # - elasticsearch-cluster
+  # - mongo
+  # - riak
+  # - hipchat
+  # - statsd
+  # - graphite
+  # - mqtt
+  # - hbase
+  # - sns
+  # - sqs
+  # - dynamodb

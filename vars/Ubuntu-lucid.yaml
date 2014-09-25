@@ -1,0 +1,2 @@
+---
+fluentd_install_script: install-ubuntu-lucid-td-agent2.sh

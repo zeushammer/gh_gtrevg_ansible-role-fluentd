@@ -1,0 +1,2 @@
+---
+fluentd_install_script: install-debian-squeeze-td-agent2.sh
