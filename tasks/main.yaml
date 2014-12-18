@@ -15,6 +15,12 @@
 
 # - debug: var=fluentd_install_script
 
+- name: make sure td-agent user is created
+  sudo: true
+  user:
+    name: td-agent
+    state: present
+
 - name: get install script
   sudo: true
   get_url:
@@ -56,6 +62,7 @@
 
 
 - name: install td-agent configuration
+  sudo: true
   template:
     src: etc_td-agent_td-agent.conf
     dest: "{{ fluentd_conf_file }}"
