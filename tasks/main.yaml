@@ -59,6 +59,7 @@
   sudo: true
   command: "{{ fluentd_bin_dir }}/fluent-gem install -N fluent-plugin-{{ item }}"
   with_items: fluentd_plugins
+  when: fluentd_plugins is not none and fluentd_plugins|length > 0
 
 
 - name: install td-agent configuration
