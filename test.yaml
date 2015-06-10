@@ -14,7 +14,12 @@
         - record-modifier
         - record-reformer
         - splunk-ex
-        - elasticsearch-cluster
+        - elasticsearch
+
+      fluentd_system:
+        log_level:           trace
+        without_source:      true
+
 
       fluentd_sources:
         - '#':                Only one comment is allowed as it's a hash
@@ -31,6 +36,22 @@
           tag:      apache.access
           format:   apache2
 
+
+      fluentd_filters:
+        - '#':      Add in a host name
+          pattern:  '**'
+          type:     record_transformer
+
+          xmlchildren:
+            - xmltag:  record
+              hostname:  "#{Socket.gethostname}"
+
+        - '#':      Grep filter example
+          pattern:  foo.bar
+          type:     grep
+          regexp1:  message cool
+          regexp2:  hostname ^web\d+\.example\.com$
+          exclude1: message uncool
 
       fluentd_matches:
         - '#':                Send data out to multiple servers
